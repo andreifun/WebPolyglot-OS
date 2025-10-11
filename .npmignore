@@ -1,0 +1,30 @@
+# Source files
+src/
+examples/
+dictionaries/
+
+# Development files
+*.test.ts
+*.test.tsx
+jest.config.js
+rollup.config.js
+tsconfig.json
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp

@@ -3,6 +3,7 @@ export type { Translations, Language, I18nConfig, I18nContextType } from './type
 
 // Export the main components and hooks
 export { I18nProvider, useTranslation } from './context';
+export type { I18nProviderProps } from './context';
 
 // Export utility functions
 export { 
@@ -28,6 +29,3 @@ export {
 } from './languages';
 
 export type { LanguageInfo } from './languages';
-
-// Export the provider props type
-export type { I18nProviderProps } from './context';

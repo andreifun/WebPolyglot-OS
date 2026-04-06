@@ -60,7 +60,6 @@ export const LANGUAGES: LanguageInfo[] = [
   { code: 'sr', name: 'Serbian', nativeName: 'Српски', countries: ['RS', 'BA', 'ME', 'XK'] },
   { code: 'bs', name: 'Bosnian', nativeName: 'Bosanski', countries: ['BA'] },
   { code: 'me', name: 'Montenegrin', nativeName: 'Crnogorski', countries: ['ME'] },
-  { code: 'hr', name: 'Croatian', nativeName: 'Hrvatski', countries: ['HR', 'BA'] },
   { code: 'si', name: 'Sinhala', nativeName: 'සිංහල', countries: ['LK'] },
   { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்', countries: ['IN', 'LK', 'SG', 'MY'] },
   { code: 'te', name: 'Telugu', nativeName: 'తెలుగు', countries: ['IN'] },
@@ -101,18 +100,13 @@ export const LANGUAGES: LanguageInfo[] = [
   { code: 've', name: 'Venda', nativeName: 'Tshivenḓa', countries: ['ZA'] },
   { code: 'ts', name: 'Tsonga', nativeName: 'Xitsonga', countries: ['ZA'] },
   { code: 'nr', name: 'Ndebele', nativeName: 'IsiNdebele', countries: ['ZA'] },
-  { code: 'nso', name: 'Northern Sotho', nativeName: 'Sesotho sa Leboa', countries: ['ZA'] },
-  { code: 'zu', name: 'Zulu', nativeName: 'IsiZulu', countries: ['ZA'] },
-  { code: 'xh', name: 'Xhosa', nativeName: 'IsiXhosa', countries: ['ZA'] },
-  { code: 'af', name: 'Afrikaans', nativeName: 'Afrikaans', countries: ['ZA', 'NA'] },
-  { code: 'st', name: 'Sotho', nativeName: 'Sesotho', countries: ['ZA', 'LS'] },
-  { code: 'tn', name: 'Tswana', nativeName: 'Setswana', countries: ['ZA', 'BW'] },
-  { code: 'ss', name: 'Swati', nativeName: 'SiSwati', countries: ['ZA', 'SZ'] },
-  { code: 've', name: 'Venda', nativeName: 'Tshivenḓa', countries: ['ZA'] },
-  { code: 'ts', name: 'Tsonga', nativeName: 'Xitsonga', countries: ['ZA'] },
-  { code: 'nr', name: 'Ndebele', nativeName: 'IsiNdebele', countries: ['ZA'] },
   { code: 'nso', name: 'Northern Sotho', nativeName: 'Sesotho sa Leboa', countries: ['ZA'] }
 ];
+
+const languageCodes = LANGUAGES.map((language) => language.code);
+if (new Set(languageCodes).size !== languageCodes.length) {
+  throw new Error('Duplicate language codes detected in CLI language catalog.');
+}
 
 export function getLanguageByCode(code: string): LanguageInfo | undefined {
   return LANGUAGES.find(lang => lang.code === code);

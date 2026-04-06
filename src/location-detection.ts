@@ -27,6 +27,10 @@ export async function getLocationBasedLanguages(): Promise<string[]> {
  * @returns Array of language codes based on timezone
  */
 export function getTimezoneBasedLanguages(): string[] {
+  if (typeof Intl === 'undefined') {
+    return ['en'];
+  }
+
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   
   // Map common timezones to countries and their languages
@@ -111,7 +115,7 @@ export function getTimezoneBasedLanguages(): string[] {
  */
 function getCurrentPosition(): Promise<GeolocationPosition> {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
       reject(new Error('Geolocation is not supported'));
       return;
     }
@@ -155,6 +159,10 @@ async function getCountryFromCoordinates(lat: number, lng: number): Promise<stri
  * Get browser language with fallback
  */
 export function getBrowserLanguageWithFallback(): string {
+  if (typeof navigator === 'undefined') {
+    return 'en';
+  }
+
   // Try to get the most specific language first
   const languages = navigator.languages || [navigator.language];
   

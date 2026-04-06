@@ -7,23 +7,35 @@ import { init } from './commands/init';
 import { listLanguages } from './commands/list-languages';
 
 const program = new Command();
+const VERSION = '2.0.0';
+
+function formatError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
 
 program
   .name('webpolyglot')
-  .description('CLI tool for WebPolyglot i18n framework')
-  .version('1.0.0');
+  .description('Bootstrap and manage WebPolyglot in React and Next.js apps.')
+  .version(VERSION)
+  .showSuggestionAfterError()
+  .showHelpAfterError();
 
 program
   .command('init')
-  .description('Initialize WebPolyglot in your project')
+  .description('Bootstrap WebPolyglot in the current project')
   .option('-d, --dir <directory>', 'Project directory', '.')
-  .option('-f, --framework <framework>', 'Framework (react, nextjs)', 'react')
+  .option('-f, --framework <framework>', 'Framework (react or nextjs)')
+  .option('--default-language <code>', 'Default language code')
+  .option('--languages <codes>', 'Comma-separated language codes to generate')
+  .option('--dictionaries-dir <directory>', 'Dictionary directory')
+  .option('--no-install', 'Skip dependency installation')
+  .option('--no-example', 'Skip generating the setup guide')
+  .option('--no-prompt', 'Run without interactive prompts')
   .action(async (options) => {
     try {
       await init(options);
-      console.log(chalk.green('✅ WebPolyglot initialized successfully!'));
     } catch (error) {
-      console.error(chalk.red('❌ Error initializing WebPolyglot:'), error);
+      console.error(chalk.red(`Error: ${formatError(error)}`));
       process.exit(1);
     }
   });
@@ -35,9 +47,8 @@ program
   .action(async (language, options) => {
     try {
       await addLanguage(language, options);
-      console.log(chalk.green(`✅ Language '${language}' added successfully!`));
     } catch (error) {
-      console.error(chalk.red('❌ Error adding language:'), error);
+      console.error(chalk.red(`Error: ${formatError(error)}`));
       process.exit(1);
     }
   });
@@ -50,7 +61,7 @@ program
     try {
       await listLanguages(options);
     } catch (error) {
-      console.error(chalk.red('❌ Error listing languages:'), error);
+      console.error(chalk.red(`Error: ${formatError(error)}`));
       process.exit(1);
     }
   });

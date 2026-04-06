@@ -1,31 +1,20 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project are documented here.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.0.0] - 2026-04-05
 
-## [1.0.0] - 2025-11-10
+### Changed
 
-### Added
-- Initial release
-- React/Next.js i18n framework with localStorage persistence
-- CLI tool for project initialization and language management
-- Support for 100+ languages with country codes
-- Location-based language detection
-- TypeScript support with full type safety
-- Nested translation keys with dot notation
-- Custom language creation
-- Language search functionality
-- `I18nProvider` component
-- `useTranslation` hook
-- CLI commands: `init`, `add`, `list`
-- Comprehensive documentation and examples
+- reset the product around a single `webpolyglot` package
+- made `webpolyglot` the canonical CLI entrypoint
+- changed init to generate provider/setup files instead of mutating app source
+- added framework detection and package-manager detection
+- added non-interactive init flags for automation and smoke testing
+- cleaned publish artifacts and added tarball verification scripts
 
-### Features
-- No route changes required
-- Lightweight bundle size
-- Browser language detection
-- Timezone-based language suggestions
-- Dictionary file management
-- Interactive CLI setup
+### Removed
+
+- the old two-package mental model
+- loader-era docs and stale generated declaration artifacts
+- fragile auto-injection as a default setup path

@@ -1,21 +1,38 @@
 {
   "name": "webpolyglot",
-  "version": "1.0.0",
-  "description": "A simple, powerful React/Next.js i18n framework with localStorage persistence. Use with CLI: npx webpolyglot-init",
-  "type": "module",
+  "version": "2.0.0",
+  "description": "React and Next.js i18n with a production-ready CLI bootstrapper.",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "bin": {
+    "webpolyglot": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
+    "dist/cli",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "jest",
-    "prepublishOnly": "npm run build"
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && npm run build:lib && npm run build:cli",
+    "build:lib": "rollup -c rollup.config.mjs",
+    "build:cli": "tsc -p cli/tsconfig.json",
+    "dev": "rollup -c rollup.config.mjs -w",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watchman=false",
+    "pack:check": "node scripts/pack-contents-check.mjs",
+    "smoke:pack": "node scripts/smoke-pack.mjs",
+    "verify": "npm test && npm run build && npm run pack:check && npm run smoke:pack",
+    "prepublishOnly": "npm run verify"
   },
   "keywords": [
     "react",
@@ -28,6 +45,15 @@
   ],
   "author": "Andrei Balaban",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^9.2.12"
+  },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"

@@ -1,142 +1,115 @@
 # WebPolyglot
 
-A simple, powerful React/Next.js i18n framework that works without route changes. WebPolyglot saves the preferred language to localStorage and provides a clean API for internationalization.
+WebPolyglot is a lightweight i18n toolkit for React and Next.js with a production-ready CLI.
 
-## Features
+It keeps translation files local, persists the selected language in `localStorage`, and bootstraps a project with safe generated files instead of risky source mutation.
 
-- 🚀 **CLI Setup** - Easy initialization with `npx webpolyglot-init`
-- 💾 **localStorage Persistence** - Remembers user's language preference
-- 🌐 **No Route Changes** - Works with any routing system
-- 📦 **TypeScript Support** - Full type safety
-- ⚡ **Lightweight** - Minimal bundle size
-- 🔧 **Flexible** - Works with React and Next.js
-- 🎯 **Nested Translations** - Support for dot-notation keys
-- 🛠️ **CLI Management** - Add languages with `webpolyglot add <language>`
-- 🌍 **100+ Languages** - Comprehensive language database with country codes
-- 🔍 **Smart Search** - Search languages by name, native name, or code
-- ➕ **Custom Languages** - Create your own languages with custom codes
-- 📍 **Location Detection** - Automatic language detection based on user location
+## Why WebPolyglot
+
+- One package, one command: `npx webpolyglot@latest init`
+- Local JSON dictionaries with no hosted translation service
+- Safe bootstrap flow that generates provider/setup files instead of rewriting your app
+- Works well for React apps and Next.js App Router projects
+- Simple runtime API: `I18nProvider` and `useTranslation`
 
 ## Quick Start
 
-### 1. Initialize WebPolyglot
-
 ```bash
-npx webpolyglot-init
+npx webpolyglot@latest init
 ```
 
-This will:
-- Create a `dictionaries/` folder with your language files
-- Install the `webpolyglot` package
-- Generate example usage code
-- Create a configuration file
+The CLI will:
 
-### 2. Add More Languages
+- detect your framework
+- detect your package manager
+- create dictionary files
+- create `webpolyglot.config.json`
+- generate a provider file and `webpolyglot.setup.md`
+- print the exact next steps for your app
 
-```bash
-# Add a new language
-webpolyglot add es
+## What `init` Creates
 
-# Add multiple languages
-webpolyglot add fr
-webpolyglot add de
-```
+- `dictionaries/*.json`
+- `webpolyglot.config.json`
+- a generated provider file such as `src/webpolyglot-provider.tsx` or `app/webpolyglot-provider.tsx`
+- `webpolyglot.setup.md`
 
-### 3. List Your Languages
+## What `init` Will Not Do
 
-```bash
-webpolyglot list
-```
+- it will not rewrite your app entry automatically
+- it will not guess complex framework-specific architecture
+- it will not overwrite your existing layout/app files
 
-## Usage
+## React Example
 
-### Using Dictionary Files (Recommended)
-
-After running `npx webpolyglot-init`, you'll have dictionary files in your `dictionaries/` folder:
-
-```
-dictionaries/
-├── en.json
-├── es.json
-└── fr.json
-```
-
-Import and use them in your app:
+After `init`, import the generated provider into your app entry:
 
 ```tsx
-import { I18nProvider, useTranslation } from 'webpolyglot';
-import enTranslations from './dictionaries/en.json';
-import esTranslations from './dictionaries/es.json';
-import frTranslations from './dictionaries/fr.json';
+import { WebPolyglotProvider } from './webpolyglot-provider';
 
-const translations = {
-  en: enTranslations,
-  es: esTranslations,
-  fr: frTranslations
-};
-
-function App() {
-  return (
-    <I18nProvider translations={translations}>
-      <YourApp />
-    </I18nProvider>
-  );
-}
+root.render(
+  <WebPolyglotProvider>
+    <App />
+  </WebPolyglotProvider>
+);
 ```
 
-### Static Translations (Alternative)
+Generated provider files use your local dictionaries:
 
 ```tsx
+import type { ReactNode } from 'react';
 import { I18nProvider } from 'webpolyglot';
+import lang_en from './dictionaries/en.json';
+import lang_es from './dictionaries/es.json';
 
 const translations = {
-  en: {
-    welcome: "Welcome!",
-    navigation: {
-      home: "Home",
-      about: "About"
-    }
-  },
-  es: {
-    welcome: "¡Bienvenido!",
-    navigation: {
-      home: "Inicio",
-      about: "Acerca de"
-    }
-  }
+  en: lang_en,
+  es: lang_es,
 };
 
-function App() {
+export function WebPolyglotProvider({ children }: { children: ReactNode }) {
   return (
-    <I18nProvider translations={translations}>
-      <YourApp />
+    <I18nProvider translations={translations} config={{ defaultLanguage: 'en' }}>
+      {children}
     </I18nProvider>
   );
 }
 ```
 
-### Using Translations in Components
+## Next.js App Router Example
+
+For Next.js App Router, use the generated client provider inside `app/layout.tsx`:
+
+```tsx
+import { WebPolyglotProvider } from './webpolyglot-provider';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <WebPolyglotProvider>{children}</WebPolyglotProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Using Translations
 
 ```tsx
 import { useTranslation } from 'webpolyglot';
 
-function MyComponent() {
+export function LanguageSwitcher() {
   const { t, language, setLanguage, availableLanguages } = useTranslation();
 
   return (
     <div>
       <h1>{t('welcome')}</h1>
-      <nav>
-        <a href="/">{t('navigation.home')}</a>
-        <a href="/about">{t('navigation.about')}</a>
-      </nav>
-      
-      <select 
-        value={language} 
-        onChange={(e) => setLanguage(e.target.value)}
-      >
-        {availableLanguages.map(lang => (
-          <option key={lang} value={lang}>{lang.toUpperCase()}</option>
+      <select value={language} onChange={(event) => setLanguage(event.target.value)}>
+        {availableLanguages.map((item) => (
+          <option key={item} value={item}>
+            {item.toUpperCase()}
+          </option>
         ))}
       </select>
     </div>
@@ -144,228 +117,71 @@ function MyComponent() {
 }
 ```
 
-## CLI Commands
+## CLI
 
-### Initialize Project
-
-```bash
-npx webpolyglot-init
-```
-
-Interactive setup that creates:
-- `dictionaries/` folder with language files
-- `webpolyglot.config.json` configuration
-- Example usage code
-- Installs the `webpolyglot` package
-
-### Add Language
+Initialize a project:
 
 ```bash
-webpolyglot add <language-code>
+npx webpolyglot@latest init
 ```
 
-Examples:
+Non-interactive example:
+
 ```bash
-webpolyglot add es        # Spanish
-webpolyglot add fr        # French  
-webpolyglot add de        # German
-webpolyglot add zh        # Chinese
-webpolyglot add ja        # Japanese
-webpolyglot add arabic    # Search for Arabic
-webpolyglot add hindi     # Search for Hindi
-webpolyglot add custom    # Create custom language
+npx webpolyglot@latest init --framework react --default-language en --languages es,fr --no-prompt
 ```
 
-This creates a new dictionary file with all existing keys (empty values) that you can fill in.
+Add a language:
 
-### List Languages
+```bash
+webpolyglot add de
+```
+
+List configured languages:
 
 ```bash
 webpolyglot list
 ```
 
-Shows all available languages in your project with key counts and file sizes.
+## API
 
-## Language Support
-
-### 100+ Languages Available
-
-WebPolyglot includes support for over 100 languages with proper country codes and native names:
-
-**Major Languages:**
-- English, Spanish, French, German, Italian, Portuguese
-- Chinese, Japanese, Korean, Arabic, Hindi, Russian
-- Dutch, Swedish, Danish, Norwegian, Finnish, Polish
-
-**Regional Languages:**
-- European: Catalan, Basque, Welsh, Irish, Maltese
-- Asian: Thai, Vietnamese, Indonesian, Malay, Filipino
-- African: Swahili, Amharic, Hausa, Yoruba, Zulu
-- Middle Eastern: Hebrew, Persian, Turkish, Urdu
-
-**Custom Languages:**
-Create your own languages with custom codes, names, and country associations.
-
-### Location-Based Detection
-
-```tsx
-import { getLocationBasedLanguages, getTimezoneBasedLanguages } from 'webpolyglot';
-
-// Get languages based on user's location
-const locationLanguages = await getLocationBasedLanguages();
-
-// Get languages based on timezone
-const timezoneLanguages = getTimezoneBasedLanguages();
-```
-
-### Language Search
-
-```tsx
-import { searchLanguages, getLanguagesByCountry } from 'webpolyglot';
-
-// Search for languages
-const results = searchLanguages('arabic');
-// Returns: Arabic, Persian, Hebrew, etc.
-
-// Get languages by country
-const usLanguages = getLanguagesByCountry('US');
-// Returns: English
-```
-
-## API Reference
-
-### I18nProvider
-
-The main provider component that wraps your application.
+### `I18nProvider`
 
 ```tsx
 interface I18nProviderProps {
   children: React.ReactNode;
-  translations?: Record<Language, Translations>;
-  languages?: Language[];
-  config?: I18nConfig;
-}
-
-interface I18nConfig {
-  defaultLanguage?: Language;
-  storageKey?: string;
-  fallbackLanguage?: Language;
+  translations: Record<Language, Translations>;
+  config?: {
+    defaultLanguage?: Language;
+    storageKey?: string;
+    fallbackLanguage?: Language;
+  };
 }
 ```
 
-### useTranslation Hook
+### `useTranslation`
 
-Returns the translation functions and current state.
+Returns:
 
-```tsx
-interface I18nContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
-  availableLanguages: Language[];
-}
+- `t(key: string)`
+- `language`
+- `setLanguage(language)`
+- `availableLanguages`
+
+## Advanced Utilities
+
+WebPolyglot also exports language search utilities and browser-oriented location helpers.
+
+Location detection is browser-only and should be treated as an enhancement, not a server-side defaulting strategy.
+
+## Troubleshooting
+
+- If `init` says no `package.json` was found, run it from your app root.
+- If you use `--no-install`, install the package yourself with your package manager.
+- If you already have a custom app architecture, follow `webpolyglot.setup.md` manually instead of expecting the CLI to wire files for you.
+
+## Development
+
+```bash
+npm run verify
 ```
-
-### Translation Structure
-
-```tsx
-interface Translations {
-  [key: string]: string | Translations;
-}
-```
-
-## Advanced Usage
-
-### Custom Configuration
-
-```tsx
-<I18nProvider 
-  translations={translations}
-  config={{
-    defaultLanguage: 'en',
-    storageKey: 'my-app-language',
-    fallbackLanguage: 'en'
-  }}
->
-  <App />
-</I18nProvider>
-```
-
-### Next.js Integration
-
-```tsx
-// pages/_app.tsx
-import { I18nProvider } from 'webpolyglot';
-
-export default function App({ Component, pageProps }) {
-  return (
-    <I18nProvider translations={translations}>
-      <Component {...pageProps} />
-    </I18nProvider>
-  );
-}
-```
-
-### Dictionary Files Structure
-
-When using dictionary files, organize them like this:
-
-```
-dictionaries/
-├── en.json
-├── es.json
-├── fr.json
-└── de.json
-```
-
-Each file should contain the complete translation object for that language:
-
-```json
-// dictionaries/en.json
-{
-  "welcome": "Welcome!",
-  "navigation": {
-    "home": "Home",
-    "about": "About"
-  },
-  "buttons": {
-    "save": "Save",
-    "cancel": "Cancel"
-  }
-}
-```
-
-### Dynamic Language Loading
-
-```tsx
-import { loadDictionaries, createDictionaryLoader } from 'webpolyglot';
-
-// Load specific languages
-const translations = await loadDictionaries(['en', 'es', 'fr']);
-
-// Create a loader for specific languages
-const loadMyLanguages = createDictionaryLoader(['en', 'es', 'fr']);
-const myTranslations = await loadMyLanguages();
-```
-
-## Examples
-
-Check the `examples/` directory for complete usage examples:
-
-- `basic-usage.tsx` - Basic React setup with static translations
-- `dictionary-usage.tsx` - Using dictionary files approach
-- `nextjs-usage.tsx` - Next.js integration
-
-## Browser Support
-
-- Modern browsers with localStorage support
-- React 16.8+ (hooks support)
-- TypeScript 4.0+
-
-## License
-
-MIT
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.

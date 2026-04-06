@@ -2,7 +2,9 @@ import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import { loadWebPolyglotConfig } from '../config';
 import { LANGUAGES, getLanguageByCode, searchLanguages } from '../languages';
+import { normalizeLanguageCode } from '../init-language-selection';
 
 export interface AddLanguageOptions {
   dir: string;
@@ -11,18 +13,12 @@ export interface AddLanguageOptions {
 export async function addLanguage(language: string, options: AddLanguageOptions) {
   const { dir } = options;
   const projectPath = path.resolve(dir);
-
-  // Check if webpolyglot config exists
   const configPath = path.join(projectPath, 'webpolyglot.config.json');
-  if (!fs.existsSync(configPath)) {
-    throw new Error('WebPolyglot not initialized. Please run "webpolyglot init" first.');
-  }
-
-  const config = await fs.readJson(configPath);
+  const config = await loadWebPolyglotConfig(projectPath);
   const dictionariesDir = path.join(projectPath, config.dictionariesDir);
 
-  let languageCode = language;
-  let languageInfo = getLanguageByCode(language);
+  let languageCode = normalizeLanguageCode(language);
+  let languageInfo = getLanguageByCode(languageCode);
 
   // If language not found, search for it
   if (!languageInfo) {
@@ -47,11 +43,12 @@ export async function addLanguage(language: string, options: AddLanguageOptions)
             default: language,
             validate: (input: string) => {
               if (!input.trim()) return 'Please enter a language code';
-              if (config.languages.includes(input)) {
+              if (config.languages.includes(normalizeLanguageCode(input))) {
                 return 'This language is already in your project';
               }
               return true;
-            }
+            },
+            filter: (input: string) => normalizeLanguageCode(input),
           },
           {
             type: 'input',
@@ -136,8 +133,8 @@ export async function addLanguage(language: string, options: AddLanguageOptions)
   }
 
   const languageName = languageInfo ? `${languageInfo.name} (${languageInfo.nativeName})` : languageCode;
-  console.log(chalk.green(`✅ Created ${languageCode}.json with ${Object.keys(flattenKeys(existingKeys)).length} keys`));
-  console.log(chalk.blue(`📝 Please fill in the translations for '${languageName}'`));
+  console.log(chalk.green(`Created ${path.relative(projectPath, languageFile)} with ${Object.keys(flattenKeys(existingKeys)).length} keys`));
+  console.log(chalk.blue(`Next: fill in translations for ${languageName}.`));
 }
 
 function createEmptyTranslations(keys: any): any {

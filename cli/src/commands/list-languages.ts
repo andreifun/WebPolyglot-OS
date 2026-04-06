@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
+import { loadWebPolyglotConfig } from '../config';
 
 export interface ListLanguagesOptions {
   dir: string;
@@ -9,19 +10,13 @@ export interface ListLanguagesOptions {
 export async function listLanguages(options: ListLanguagesOptions) {
   const { dir } = options;
   const projectPath = path.resolve(dir);
-
-  // Check if webpolyglot config exists
-  const configPath = path.join(projectPath, 'webpolyglot.config.json');
-  if (!fs.existsSync(configPath)) {
-    throw new Error('WebPolyglot not initialized. Please run "webpolyglot init" first.');
-  }
-
-  const config = await fs.readJson(configPath);
+  const config = await loadWebPolyglotConfig(projectPath);
   const dictionariesDir = path.join(projectPath, config.dictionariesDir);
 
-  console.log(chalk.blue('📋 WebPolyglot Languages:'));
+  console.log(chalk.blue('WebPolyglot languages'));
   console.log(chalk.gray(`Default: ${config.defaultLanguage}`));
   console.log(chalk.gray(`Directory: ${config.dictionariesDir}`));
+  console.log(chalk.gray(`Framework: ${config.framework}`));
   console.log('');
 
   const languages = await fs.readdir(dictionariesDir);
@@ -49,7 +44,7 @@ export async function listLanguages(options: ListLanguagesOptions) {
   console.log('');
   console.log(chalk.gray('Commands:'));
   console.log(chalk.gray('  webpolyglot add <language>  - Add a new language'));
-  console.log(chalk.gray('  webpolyglot init           - Reinitialize project'));
+  console.log(chalk.gray('  webpolyglot init           - Regenerate setup files'));
 }
 
 function countKeys(obj: any): number {

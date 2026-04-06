@@ -107,5 +107,5 @@ export default function App() {
   );
 }
 
-// Note: For dictionary files approach, use the CLI tool:
-// npx webpolyglot-init
+// Note: Use the CLI to generate dictionaries and setup files:
+// npx webpolyglot@latest init

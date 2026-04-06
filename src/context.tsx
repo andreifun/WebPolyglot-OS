@@ -14,7 +14,7 @@ export interface I18nProviderProps {
 
 export function I18nProvider({ 
   children, 
-  translations, 
+  translations,
   config = {} 
 }: I18nProviderProps) {
   const {

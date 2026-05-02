@@ -1,6 +1,6 @@
 {
   "name": "webpolyglot",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "React and Next.js i18n with a production-ready CLI bootstrapper.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -78,10 +78,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/andreibalaban/webpolyglot.git"
+    "url": "https://github.com/andreifun/webpolyglot.git"
   },
   "bugs": {
-    "url": "https://github.com/andreibalaban/webpolyglot/issues"
+    "url": "https://github.com/andreifun/webpolyglot/issues"
   },
-  "homepage": "https://github.com/andreibalaban/webpolyglot#readme"
+  "homepage": "https://github.com/andreifun/webpolyglot#readme"
 }

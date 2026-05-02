@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [2.0.1] - 2026-04-07
+
+### Fixed
+
+- stopped bundling React JSX runtime internals into the published library output
+- fixed a Next.js App Router + Turbopack crash on import with React 19
+- added a packaging regression check to prevent published bundles from shipping React internals
+
 ## [2.0.0] - 2026-04-05
 
 ### Changed

@@ -1,5 +1,5 @@
 import { execFileSync } from 'child_process';
-import { mkdtempSync, rmSync } from 'fs';
+import { mkdtempSync, readFileSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 
@@ -46,6 +46,18 @@ try {
   for (const requiredFile of requiredFiles) {
     if (!fileList.includes(requiredFile)) {
       throw new Error(`Packed tarball is missing ${requiredFile}`);
+    }
+  }
+
+  const esmEntry = readFileSync(path.join(packageRoot, 'dist/index.mjs'), 'utf8');
+  const cjsEntry = readFileSync(path.join(packageRoot, 'dist/index.js'), 'utf8');
+
+  for (const [fileName, content] of [
+    ['dist/index.mjs', esmEntry],
+    ['dist/index.js', cjsEntry],
+  ]) {
+    if (content.includes('__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED')) {
+      throw new Error(`${fileName} unexpectedly bundles React internals.`);
     }
   }
 } finally {

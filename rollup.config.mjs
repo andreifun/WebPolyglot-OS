@@ -5,6 +5,12 @@ import dts from 'rollup-plugin-dts';
 import { readFileSync } from 'fs';
 
 const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
+const external = [
+  'react',
+  'react-dom',
+  'react/jsx-runtime',
+  'react/jsx-dev-runtime',
+];
 
 export default [
   {
@@ -30,12 +36,12 @@ export default [
         tsconfig: './tsconfig.json',
       }),
     ],
-    external: ['react', 'react-dom'],
+    external,
   },
   {
     input: 'dist/index.d.ts',
     output: [{ file: 'dist/index.d.ts', format: 'esm' }],
     plugins: [dts()],
-    external: [/\.css$/],
+    external: [...external, /\.css$/],
   },
 ];
